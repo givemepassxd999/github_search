@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GithubSearchApiDemo</string>
+    <string name="searchbar_hint">請輸入要搜尋的訊息</string>
 </resources>

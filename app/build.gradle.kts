@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.githubsearchapidemo"
-    compileSdk = 33
+    namespace = "com.example.github_search_api_demo"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.githubsearchapidemo"
+        applicationId = "com.example.github_search_api_demo"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -33,11 +33,14 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
 
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")

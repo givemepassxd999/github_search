@@ -1,4 +1,4 @@
-package com.example.githubsearchapidemo
+package com.example.github_search_api_demo
 
 import org.junit.Test
 
