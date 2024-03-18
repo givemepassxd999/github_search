@@ -1,4 +1,4 @@
-package com.example.github_search_api_demo.data
+package com.example.github_search_api_demo.data.response
 
 import com.google.gson.annotations.SerializedName
 

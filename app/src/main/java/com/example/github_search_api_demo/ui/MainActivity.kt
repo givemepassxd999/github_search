@@ -1,4 +1,4 @@
-package com.example.github_search_api_demo
+package com.example.github_search_api_demo.ui
 
 import android.os.Bundle
 import android.widget.EditText
@@ -6,9 +6,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import com.example.github_search_api_demo.databinding.ActivityMainBinding
+import com.example.github_search_api_demo.viewmodel.MainViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val mainViewModel by viewModel<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,6 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        mainViewModel.queryRepos(query = "aaa")
         with(binding.searchView) {
             editText.addTextChangedListener {
 
@@ -40,6 +44,9 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 })
+        }
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            binding.swipeRefreshLayout.isRefreshing = false
         }
     }
 }
