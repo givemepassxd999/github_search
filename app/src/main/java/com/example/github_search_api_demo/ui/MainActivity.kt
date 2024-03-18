@@ -6,14 +6,14 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.github_search_api_demo.R
 import com.example.github_search_api_demo.databinding.ActivityMainBinding
+import com.example.github_search_api_demo.ext.debounce
 import com.example.github_search_api_demo.viewmodel.MainViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -35,10 +35,10 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         initSearchView()
         with(binding.searchView) {
-            editText.addTextChangedListener {
-                val info = it.toString()
-                if (info.isEmpty()) return@addTextChangedListener
-                queryData(info)
+            lifecycleScope.launch {
+                editText.debounce(1000).collectLatest {
+                    queryData(it)
+                }
             }
             editText.setOnEditorActionListener { v, _, _ ->
                 val info = (v as EditText).text.toString()
@@ -111,10 +111,20 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             mainViewModel.queryRepos(info).collectLatest {
                 binding.searchDataList.adapter?.let { adapter ->
-                    (adapter as SearchResultAdapter).submitData(it)
+                    (adapter as? SearchResultAdapter)?.run{
+                        submitData(PagingData.empty())
+                        if(info.isNotEmpty()) {
+                            submitData(it)
+                        }
+                    }
                 }
                 binding.searchResultList.adapter?.let { adapter ->
-                    (adapter as SearchResultAdapter).submitData(it)
+                    (adapter as? SearchResultAdapter)?.run{
+                        submitData(PagingData.empty())
+                        if(info.isNotEmpty()) {
+                            submitData(it)
+                        }
+                    }
                 }
             }
         }
