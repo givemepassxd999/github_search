@@ -9,8 +9,11 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
+import androidx.recyclerview.widget.DividerItemDecoration
+import com.example.github_search_api_demo.R
 import com.example.github_search_api_demo.databinding.ActivityMainBinding
 import com.example.github_search_api_demo.viewmodel.MainViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -35,21 +38,13 @@ class MainActivity : AppCompatActivity() {
             editText.addTextChangedListener {
                 val info = it.toString()
                 if (info.isEmpty()) return@addTextChangedListener
-                lifecycleScope.launch {
-                    mainViewModel.queryRepos(info).collectLatest {
-//                        binding.searchDataList.adapter?.let { adapter ->
-//                            (adapter as SearchResultAdapter).submitData(it)
-//                        }
-                        binding.searchResultList.adapter?.let { adapter ->
-                            (adapter as SearchResultAdapter).submitData(it)
-                        }
-                    }
-                }
+                queryData(info)
             }
             editText.setOnEditorActionListener { v, _, _ ->
                 val info = (v as EditText).text.toString()
                 binding.searchBar.setText(info)
                 hide()
+                queryData(info)
                 false
             }
 
@@ -71,24 +66,55 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             adapter.loadStateFlow.collect { loadState ->
                 val refreshState = loadState.refresh
-
-                // Only show the list if refresh succeeds.
                 binding.searchResultList.isVisible = refreshState is LoadState.NotLoading
 
-                if (refreshState is LoadState.Error)
+                if (refreshState is LoadState.Error) {
                     when (refreshState.error as Exception) {
-                        is HttpException -> {}
-                        is IOException -> {}
+                        is HttpException -> {
+                            Toast.makeText(
+                                this@MainActivity,
+                                getString(R.string.internet_error), Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        is IOException -> {
+                            Toast.makeText(
+                                this@MainActivity,
+                                getString(R.string.no_internet_connection_available),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        else -> {
+                            Toast.makeText(
+                                this@MainActivity,
+                                getString(R.string.unknown_error), Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
 
-                val errorState = loadState.append as? LoadState.Error
-                    ?: loadState.prepend as? LoadState.Error
-                errorState?.let {
-                    Toast.makeText(
-                        this@MainActivity,
-                        it.error.message,
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    val errorState = loadState.append as? LoadState.Error
+                        ?: loadState.prepend as? LoadState.Error
+                    errorState?.let {
+                        Toast.makeText(
+                            this@MainActivity,
+                            getString(R.string.unknown_error),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun queryData(info: String) {
+        lifecycleScope.launch {
+            mainViewModel.queryRepos(info).collectLatest {
+                binding.searchDataList.adapter?.let { adapter ->
+                    (adapter as SearchResultAdapter).submitData(it)
+                }
+                binding.searchResultList.adapter?.let { adapter ->
+                    (adapter as SearchResultAdapter).submitData(it)
                 }
             }
         }
@@ -97,6 +123,8 @@ class MainActivity : AppCompatActivity() {
     private fun initSearchView() {
         adapter = SearchResultAdapter()
         binding.searchResultList.adapter = adapter
-//        binding.searchDataList.adapter = SearchResultAdapter()
+        val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        binding.searchResultList.addItemDecoration(decoration)
+        binding.searchDataList.adapter = SearchResultAdapter()
     }
 }

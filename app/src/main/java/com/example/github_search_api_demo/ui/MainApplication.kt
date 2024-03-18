@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.github_search_api_demo.di.AppModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import timber.log.Timber
 
 class MainApplication : Application() {
     override fun onCreate() {
@@ -16,6 +17,7 @@ class MainApplication : Application() {
                 modules(list)
             }
         }
+        Timber.plant(Timber.DebugTree())
     }
 
     companion object {

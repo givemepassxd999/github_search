@@ -3,4 +3,6 @@
     <string name="searchbar_hint">請輸入要搜尋的訊息</string>
     <string name="no_internet_connection_available">無網路可使用</string>
     <string name="http_error">發生錯誤:%1$s</string>
+    <string name="internet_error">網路錯誤</string>
+    <string name="unknown_error">發生未知錯誤</string>
 </resources>

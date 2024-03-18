@@ -1,12 +1,9 @@
 package com.example.github_search_api_demo.data.repository
 
-import android.widget.Toast
-import com.example.github_search_api_demo.R
 import com.example.github_search_api_demo.api.ApiService
 import com.example.github_search_api_demo.api.HttpHandler
 import com.example.github_search_api_demo.api.HttpResult
 import com.example.github_search_api_demo.data.response.ItemInfo
-import com.example.github_search_api_demo.ui.MainApplication.Companion.getApplication
 
 class RepositoryImpl(private val service: ApiService) : Repository {
     private val httpHandler = HttpHandler()
@@ -20,14 +17,7 @@ class RepositoryImpl(private val service: ApiService) : Repository {
         }
         return when (result) {
             is HttpResult.Success -> result.data.items
-            is HttpResult.Error -> {
-                Toast.makeText(
-                    getApplication(),
-                    getApplication().getString(R.string.http_error, result.exception.message),
-                    Toast.LENGTH_SHORT
-                ).show()
-                arrayListOf()
-            }
+            is HttpResult.Error -> throw result.exception
         }
     }
 }

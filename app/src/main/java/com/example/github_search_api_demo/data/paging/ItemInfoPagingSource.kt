@@ -9,7 +9,7 @@ import timber.log.Timber
 import java.io.IOException
 
 
-const val START_INDEX = 1
+const val START_INDEX = 0
 
 class ItemInfoPagingSource(private val repo: Repository, private val queryKey: String) :
     PagingSource<Int, ItemInfo>() {
@@ -22,13 +22,20 @@ class ItemInfoPagingSource(private val repo: Repository, private val queryKey: S
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ItemInfo> {
-        val position = params.key ?: START_INDEX
-        val response =
-            repo.queryRepos(queryKey = queryKey, page = position, pageCount = PAGE_SIZE)
-
         return try {
-            val prevKey = if (position == START_INDEX) null else position - 1
-            val nextKey = if (response.isEmpty()) null else position + 1
+            val position = params.key ?: START_INDEX
+            val response =
+                repo.queryRepos(queryKey = queryKey, page = position, pageCount = PAGE_SIZE)
+            val prevKey = if (position == START_INDEX) {
+                null
+            } else {
+                position - 1
+            }
+            val nextKey = if (response.isEmpty()) {
+                null
+            } else {
+                position + 1
+            }
             LoadResult.Page(
                 data = response,
                 prevKey = prevKey,
