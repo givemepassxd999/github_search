@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">GithubSearchApiDemo</string>
     <string name="searchbar_hint">請輸入要搜尋的訊息</string>
+    <string name="no_internet_connection_available">無網路可使用</string>
 </resources>
