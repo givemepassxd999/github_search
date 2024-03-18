@@ -50,7 +50,11 @@ dependencies {
         set("lifecycle_version", "2.7.0")
         set("refresh_version", "1.1.0")
         set("koin_version", "3.1.6")
+        set("timber_version", "5.0.1")
     }
+
+    // Timber
+    implementation("com.jakewharton.timber:timber:${ext.get("timber_version")}")
 
     // Koin Core features
     implementation("io.insert-koin:koin-core:${ext.get("koin_version")}")

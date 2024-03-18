@@ -1,8 +1,8 @@
 package com.example.github_search_api_demo.di
 
 import com.example.github_search_api_demo.api.ApiManager
-import com.example.github_search_api_demo.data.repository.ReposDataSource
 import com.example.github_search_api_demo.data.repository.Repository
+import com.example.github_search_api_demo.data.repository.RepositoryImpl
 import com.example.github_search_api_demo.viewmodel.MainViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -17,6 +17,6 @@ class AppModule {
         viewModel { MainViewModel(get()) }
     }
     val repoModule = module {
-        single<Repository> { ReposDataSource(get()) }
+        single<Repository> { RepositoryImpl(get()) }
     }
 }

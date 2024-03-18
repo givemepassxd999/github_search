@@ -13,6 +13,7 @@ import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 import java.io.IOException
 
 object ApiManager {
@@ -39,6 +40,7 @@ object ApiManager {
 class NoInternetInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         if (isNetworkAvailable(MainApplication.getApplication()).not()) {
+            Timber.d("NoInternetInterceptor")
             throw NoNetworkException(MainApplication.getApplication())
         }
         val builder: Request.Builder = chain.request().newBuilder()
