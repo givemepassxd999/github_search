@@ -51,7 +51,11 @@ dependencies {
         set("refresh_version", "1.1.0")
         set("koin_version", "3.1.6")
         set("timber_version", "5.0.1")
+        set("glide_version", "4.16.0")
     }
+
+    // Glide
+    implementation("com.github.bumptech.glide:glide:${ext.get("glide_version")}")
 
     // Timber
     implementation("com.jakewharton.timber:timber:${ext.get("timber_version")}")
