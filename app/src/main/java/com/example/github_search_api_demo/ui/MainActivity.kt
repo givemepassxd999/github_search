@@ -138,10 +138,10 @@ class MainActivity : AppCompatActivity() {
             updateState(LoadState.Loading)
             mainViewModel.queryRepos(info).collectLatest { itemList ->
                 searchResultAdapter.run {
-                    submitData(PagingData.empty())
                     if (info.isNotEmpty()) {
                         submitData(itemList)
                     } else {
+                        submitData(PagingData.empty())
                         updateState(LoadState.NotLoading(true))
                     }
                 }
