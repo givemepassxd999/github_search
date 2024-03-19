@@ -5,4 +5,6 @@
     <string name="http_error">發生錯誤:%1$s</string>
     <string name="internet_error">網路錯誤</string>
     <string name="unknown_error">發生未知錯誤</string>
+    <string name="image_desc">image_desc</string>
+    <string name="no_data">無資料</string>
 </resources>

@@ -54,6 +54,6 @@ class ItemInfoPagingSource(private val repo: Repository, private val queryKey: S
     }
 
     companion object {
-        const val PAGE_SIZE = 10
+        const val PAGE_SIZE = 100
     }
 }

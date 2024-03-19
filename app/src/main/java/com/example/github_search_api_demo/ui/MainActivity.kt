@@ -25,7 +25,6 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var searchResultAdapter: SearchResultAdapter
-    private lateinit var searchDataAdapter: SearchDataAdapter
     private val mainViewModel by viewModel<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,13 +41,13 @@ class MainActivity : AppCompatActivity() {
                 editText.debounce(1000).collectLatest {
                     binding.searchBar.setText(it)
                     queryData(it)
+                    mainViewModel.setQuery(it)
                 }
             }
             editText.setOnEditorActionListener { v, _, _ ->
                 val info = (v as EditText).text.toString()
                 binding.searchBar.setText(info)
                 hide()
-                queryData(info)
                 false
             }
 
@@ -66,11 +65,34 @@ class MainActivity : AppCompatActivity() {
         }
         binding.swipeRefreshLayout.setOnRefreshListener {
             binding.swipeRefreshLayout.isRefreshing = false
+            syncSearchBar(mainViewModel.currentQueryValue.value)
         }
+        with(binding.searchView) {
+            if (isShowing) {
+                hide()
+            }
+        }
+        syncSearchBar(mainViewModel.currentQueryValue.value)
+        queryData(mainViewModel.currentQueryValue.value)
+    }
+
+    private fun syncSearchBar(info: String) {
+        binding.searchBar.setText(info)
+        updateState(LoadState.Loading)
+    }
+
+    private fun updateState(state: LoadState) {
         lifecycleScope.launch {
             searchResultAdapter.loadStateFlow.collect { loadState ->
-                val refreshState = loadState.refresh
+                val refreshState = if (state == LoadState.Loading) {
+                    loadState.refresh
+                } else {
+                    loadState.append
+                }
                 binding.searchResultList.isVisible = refreshState is LoadState.NotLoading
+                binding.progressBar.isVisible = refreshState is LoadState.Loading
+                binding.emptyViewLayout.isVisible =
+                    refreshState is LoadState.NotLoading && searchResultAdapter.itemCount == 0
 
                 if (refreshState is LoadState.Error) {
                     when (refreshState.error as Exception) {
@@ -113,17 +135,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun queryData(info: String) {
         lifecycleScope.launch {
-            mainViewModel.queryRepos(info).collectLatest {
-                searchDataAdapter.run {
-                    submitData(PagingData.empty())
-                    if (info.isNotEmpty()) {
-                        submitData(it)
-                    }
-                }
+            updateState(LoadState.Loading)
+            mainViewModel.queryRepos(info).collectLatest { itemList ->
                 searchResultAdapter.run {
                     submitData(PagingData.empty())
                     if (info.isNotEmpty()) {
-                        submitData(it)
+                        submitData(itemList)
+                    } else {
+                        updateState(LoadState.NotLoading(true))
                     }
                 }
             }
@@ -131,16 +150,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        searchDataAdapter = SearchDataAdapter {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.owner.url))
-            startActivity(intent)
-        }
         searchResultAdapter = SearchResultAdapter {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.owner.url))
-            startActivity(intent)
+            it.owner?.url?.let { url ->
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                startActivity(intent)
+            }
         }
-        binding.searchDataList.adapter = searchDataAdapter
         binding.searchResultList.adapter = searchResultAdapter
+        binding.searchDataList.adapter = searchResultAdapter
         val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         binding.searchResultList.addItemDecoration(decoration)
     }

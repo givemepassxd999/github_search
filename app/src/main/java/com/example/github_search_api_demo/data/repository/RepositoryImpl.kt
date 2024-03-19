@@ -16,7 +16,7 @@ class RepositoryImpl(private val service: ApiService) : Repository {
             )
         }
         return when (result) {
-            is HttpResult.Success -> result.data.items
+            is HttpResult.Success -> result.data.items ?: arrayListOf()
             is HttpResult.Error -> throw result.exception
         }
     }

@@ -11,8 +11,17 @@ import com.example.github_search_api_demo.data.paging.ItemInfoPagingSource
 import com.example.github_search_api_demo.data.repository.Repository
 import com.example.github_search_api_demo.data.response.ItemInfo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
+
+    private var _currentQueryValue = MutableStateFlow("")
+    val currentQueryValue: StateFlow<String> = _currentQueryValue
+
+    fun setQuery(query: String) {
+        _currentQueryValue.value = query
+    }
 
     fun queryRepos(query: String): Flow<PagingData<ItemInfo>> {
         return Pager(
