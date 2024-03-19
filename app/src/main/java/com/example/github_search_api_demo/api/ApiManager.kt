@@ -6,6 +6,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import com.example.github_search_api_demo.R
 import com.example.github_search_api_demo.ui.MainApplication
+import okhttp3.Cache
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -22,9 +23,18 @@ object ApiManager {
     private val logger = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
+    private const val cacheSize = (5 * 1024 * 1024).toLong()
     private val client = OkHttpClient.Builder()
+        .cache(Cache(MainApplication.getApplication().cacheDir, cacheSize))
         .addInterceptor(logger)
         .addInterceptor(NoInternetInterceptor())
+        .addInterceptor { chain ->
+            var request = chain.request()
+            request.newBuilder()
+                .header("Cache-Control", "public, only-if-cached, max-stale=" + 60 * 60 * 24 * 7)
+                .build()
+            chain.proceed(request)
+        }
         .build()
 
     fun create(): ApiService {

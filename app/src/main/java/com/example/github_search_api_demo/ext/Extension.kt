@@ -7,8 +7,9 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 
-fun EditText.debounce(timeMillis: Long = 500L): Flow<String> = callbackFlow {
+fun EditText.debounce(timeMillis: Long = 1000L): Flow<String> = callbackFlow {
     val textWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
         }
@@ -22,4 +23,4 @@ fun EditText.debounce(timeMillis: Long = 500L): Flow<String> = callbackFlow {
     }
     addTextChangedListener(textWatcher)
     awaitClose { removeTextChangedListener(textWatcher) }
-}.debounce(timeMillis)
+}.distinctUntilChanged().debounce(timeMillis)
