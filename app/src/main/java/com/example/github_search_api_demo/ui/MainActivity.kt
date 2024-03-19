@@ -156,8 +156,13 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-        binding.searchResultList.adapter = searchResultAdapter
-        binding.searchDataList.adapter = searchResultAdapter
+
+        binding.searchResultList.adapter = searchResultAdapter.withLoadStateFooter(
+            footer = ReposLoadStateAdapter()
+        )
+        binding.searchDataList.adapter = searchResultAdapter.withLoadStateFooter(
+            footer = ReposLoadStateAdapter()
+        )
         val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         binding.searchResultList.addItemDecoration(decoration)
     }

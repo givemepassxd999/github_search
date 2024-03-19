@@ -2,6 +2,8 @@ package com.example.github_search_api_demo.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.LoadState
+import androidx.paging.LoadStateAdapter
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
