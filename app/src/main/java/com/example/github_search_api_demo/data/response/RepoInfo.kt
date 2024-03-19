@@ -3,8 +3,6 @@ package com.example.github_search_api_demo.data.response
 import com.google.gson.annotations.SerializedName
 
 data class RepoInfo(
-    @SerializedName("total_count") var totalCount: Int,
-    @SerializedName("incomplete_results") var incompleteResults: Boolean,
     @SerializedName("items") var items: List<ItemInfo>
 )
 
@@ -16,6 +14,6 @@ data class ItemInfo(
 )
 
 data class Owner(
-    @SerializedName("url") var url: String,
+    @SerializedName("html_url") var url: String,
     @SerializedName("avatar_url") var avatarUrl: String,
 )

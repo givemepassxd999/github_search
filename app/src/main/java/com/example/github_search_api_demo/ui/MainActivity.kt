@@ -1,5 +1,7 @@
 package com.example.github_search_api_demo.ui
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
@@ -22,7 +24,8 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var adapter: SearchResultAdapter
+    private lateinit var searchResultAdapter: SearchResultAdapter
+    private lateinit var searchDataAdapter: SearchDataAdapter
     private val mainViewModel by viewModel<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,10 +36,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        initSearchView()
+        initView()
         with(binding.searchView) {
             lifecycleScope.launch {
                 editText.debounce(1000).collectLatest {
+                    binding.searchBar.setText(it)
                     queryData(it)
                 }
             }
@@ -64,7 +68,7 @@ class MainActivity : AppCompatActivity() {
             binding.swipeRefreshLayout.isRefreshing = false
         }
         lifecycleScope.launch {
-            adapter.loadStateFlow.collect { loadState ->
+            searchResultAdapter.loadStateFlow.collect { loadState ->
                 val refreshState = loadState.refresh
                 binding.searchResultList.isVisible = refreshState is LoadState.NotLoading
 
@@ -110,31 +114,34 @@ class MainActivity : AppCompatActivity() {
     private fun queryData(info: String) {
         lifecycleScope.launch {
             mainViewModel.queryRepos(info).collectLatest {
-                binding.searchDataList.adapter?.let { adapter ->
-                    (adapter as? SearchResultAdapter)?.run{
-                        submitData(PagingData.empty())
-                        if(info.isNotEmpty()) {
-                            submitData(it)
-                        }
+                searchDataAdapter.run {
+                    submitData(PagingData.empty())
+                    if (info.isNotEmpty()) {
+                        submitData(it)
                     }
                 }
-                binding.searchResultList.adapter?.let { adapter ->
-                    (adapter as? SearchResultAdapter)?.run{
-                        submitData(PagingData.empty())
-                        if(info.isNotEmpty()) {
-                            submitData(it)
-                        }
+                searchResultAdapter.run {
+                    submitData(PagingData.empty())
+                    if (info.isNotEmpty()) {
+                        submitData(it)
                     }
                 }
             }
         }
     }
 
-    private fun initSearchView() {
-        adapter = SearchResultAdapter()
-        binding.searchResultList.adapter = adapter
+    private fun initView() {
+        searchDataAdapter = SearchDataAdapter {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.owner.url))
+            startActivity(intent)
+        }
+        searchResultAdapter = SearchResultAdapter {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.owner.url))
+            startActivity(intent)
+        }
+        binding.searchDataList.adapter = searchDataAdapter
+        binding.searchResultList.adapter = searchResultAdapter
         val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         binding.searchResultList.addItemDecoration(decoration)
-        binding.searchDataList.adapter = SearchResultAdapter()
     }
 }

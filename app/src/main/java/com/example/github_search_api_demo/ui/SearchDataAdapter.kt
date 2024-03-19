@@ -6,13 +6,13 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.github_search_api_demo.data.response.ItemInfo
-import com.example.github_search_api_demo.databinding.SearchResultItemInfoBinding
+import com.example.github_search_api_demo.databinding.SearchDataItemInfoBinding
 
-class SearchResultAdapter(private val listener: OnItemClickListener) :
+class SearchDataAdapter(private val listener: OnItemClickListener) :
     PagingDataAdapter<ItemInfo, RecyclerView.ViewHolder>(ItemComparator()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = SearchResultItemInfoBinding.inflate(layoutInflater, parent, false)
+        val binding = SearchDataItemInfoBinding.inflate(layoutInflater, parent, false)
         return ItemInfoHolder(binding)
     }
 
@@ -23,7 +23,7 @@ class SearchResultAdapter(private val listener: OnItemClickListener) :
         }
     }
 
-    inner class ItemInfoHolder(private val binding: SearchResultItemInfoBinding) :
+    inner class ItemInfoHolder(private val binding: SearchDataItemInfoBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ItemInfo) {
             binding.itemTitle.text = item.fullName
@@ -44,10 +44,4 @@ class SearchResultAdapter(private val listener: OnItemClickListener) :
 
     }
 }
-
-fun interface OnItemClickListener {
-    fun onItemClick(item: ItemInfo)
-}
-
-
 
