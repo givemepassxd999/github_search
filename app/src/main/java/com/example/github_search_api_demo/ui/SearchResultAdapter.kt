@@ -35,11 +35,11 @@ class SearchResultAdapter(private val listener: OnItemClickListener) :
 
     class ItemComparator : DiffUtil.ItemCallback<ItemInfo>() {
         override fun areItemsTheSame(oldItem: ItemInfo, newItem: ItemInfo): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem == newItem
         }
 
         override fun areContentsTheSame(oldItem: ItemInfo, newItem: ItemInfo): Boolean {
-            return oldItem.fullName == newItem.fullName
+            return oldItem.id == newItem.id
         }
 
     }

@@ -9,7 +9,7 @@ import timber.log.Timber
 import java.io.IOException
 
 
-const val START_INDEX = 0
+const val START_INDEX = 1
 
 class ItemInfoPagingSource(private val repo: Repository, private val queryKey: String) :
     PagingSource<Int, ItemInfo>() {
